@@ -61,9 +61,6 @@ router.post("/login", async (req, res) => {
         expiresIn: "1d", //one day is "1d" /"1w"...
       }
     );
-    // res
-    //   .status(200)
-    //   .send({ userEmail: user.email, userName: user.name, token: token });
     res
       .cookie("token", token, {
         httpOnly: true,
@@ -101,4 +98,40 @@ router.delete("/:id", (req, res) => {
     });
 });
 
+//check if the user is logedin and returns the user id (usefull in frontend)
+router.get("/loggedIn", (req, res) => {
+  try {
+    const token = req.cookies.token;
+
+    if (!token) return res.json(null);
+
+    const validatedUser = jwt.verify(token, process.env.SECRET);
+    console.log(validatedUser);
+    res.send(validatedUser.userName);
+  } catch (err) {
+    return res.json(null);
+  }
+});
+
+//logout user
+router.get("/logOut", (req, res) => {
+  try {
+    res
+      .cookie("token", "", {
+        httpOnly: true,
+        sameSite:
+          process.env.NODE_ENV === "development"
+            ? "lax"
+            : process.env.NODE_ENV === "production" && "none",
+        secure:
+          process.env.NODE_ENV === "development"
+            ? false
+            : process.env.NODE_ENV === "production" && true,
+        expires: new Date(0),
+      })
+      .send();
+  } catch (err) {
+    return res.json(null);
+  }
+});
 module.exports = router;
