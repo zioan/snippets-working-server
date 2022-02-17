@@ -24,6 +24,7 @@ router.post("/register", async (req, res) => {
   const token = jwt.sign(
     {
       id: user._id,
+      userName: user.name,
     },
     process.env.SECRET
   );
@@ -41,12 +42,12 @@ router.post("/register", async (req, res) => {
           ? false
           : process.env.NODE_ENV === "production" && true,
     })
+    .status(200)
     .send({ userEmail: user.email, userName: user.name, token: token });
 });
 
 router.post("/login", async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
-  const secret = process.env.SECRET;
 
   if (!user) return res.status(400).send("User not found");
 
@@ -56,7 +57,7 @@ router.post("/login", async (req, res) => {
         id: user._id,
         userName: user.name,
       },
-      secret,
+      process.env.SECRET,
       {
         expiresIn: "1d", //one day is "1d" /"1w"...
       }

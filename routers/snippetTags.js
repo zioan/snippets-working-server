@@ -31,7 +31,6 @@ router.post("/", auth, async (req, res) => {
   snippetTag = await snippetTag.save();
 
   if (!snippetTag) res.status(500).send("The snippet cannot be created!");
-  console.log(req.payload);
   res.send(snippetTag);
 });
 

@@ -20,7 +20,7 @@ router.get("/:tag", auth, async (req, res) => {
     user: req.user,
   });
 
-  if (!filteredSnippetList) res.status(404).json({ success: false });
+  if (!filteredSnippetList) return res.status(404).json({ success: false });
   res.status(200).send(filteredSnippetList);
 });
 
