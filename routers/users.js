@@ -18,6 +18,15 @@ router.post("/register", async (req, res) => {
     email: req.body.email,
     passwordHash: bcrypt.hashSync(req.body.password, 10),
   });
+
+  //check if there is another account with the same email
+  const existingUser = await User.findOne({ email: newUser.email });
+  if (existingUser) {
+    return res.status(400).json({
+      errorMessage: "An account with this email already exists.",
+    });
+  }
+
   const user = await newUser.save();
   if (!newUser) return res.status(404).send("the user cannot be created");
 
